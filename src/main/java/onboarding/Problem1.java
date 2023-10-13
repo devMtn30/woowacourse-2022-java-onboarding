@@ -7,8 +7,7 @@ import java.util.stream.Stream;
 
 class Problem1 {
     public static int solution(List<Integer> pobi, List<Integer> crong) {
-        if (isException(pobi.get(0), pobi.get(1))
-                || isException(crong.get(0), crong.get(1))) {
+        if (!isValidPages(pobi.get(0), pobi.get(1)) || !isValidPages(crong.get(0), crong.get(1))) {
             return -1;
         }
 
@@ -21,29 +20,28 @@ class Problem1 {
         return 0;
     }
 
-    public static boolean isException(int leftPage, int rightPage) {
-        return rightPage - leftPage != 1;
+    public static boolean isValidPages(int leftPage, int rightPage) {
+        return rightPage - leftPage == 1;
     }
 
     public static int getMaxNumber(int num1, int num2) {
-        List<Integer> numbers = Stream.concat(
-                convertMultiSum(num1).stream(),
-                convertMultiSum(num2).stream())
-                .collect(Collectors.toList());
+        List<Integer> scores = calculateSumAndProduct(num1);
+        scores.addAll(calculateSumAndProduct(num2));
 
-        return Collections.max(numbers);
+        return scores.stream().max(Integer::compareTo).orElse(0);
     }
 
-    private static List<Integer> convertMultiSum(int num) {
+    private static List<Integer> calculateSumAndProduct(int num) {
         int sum = 0;
-        int multi = 1;
+        int product = 1;
 
-        while (num !=0) {
-            sum += num % 10;
-            multi *= num % 10;
+        while (num != 0) {
+            int digit = num % 10;
+            sum += digit;
+            product *= digit;
             num /= 10;
         }
-        return List.of(multi, sum);
+        return List.of(sum, product);
     }
 
 
